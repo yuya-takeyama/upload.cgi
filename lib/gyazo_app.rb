@@ -21,13 +21,13 @@ class GyazoApp < Sinatra::Base
   end
 
   before do
-    if !request.get? && options.gyazo_id
-      halt(500) unless params[:id] == options.gyazo_id
+    if !request.get? && settings.gyazo_id
+      halt(500) unless params[:id] == settings.gyazo_id
     end
   end
 
   get '/' do
-    redirect options.repository_url
+    redirect settings.repository_url
   end
   
   get '/favicon.ico' do
@@ -44,7 +44,7 @@ class GyazoApp < Sinatra::Base
             end)
     hash = Digest::MD5.hexdigest(data).to_s
     @image = Gyazo::Image.create!(:gyazo_hash => hash, :body => BSON::Binary.new(data))
-    "http://#{options.my_host rescue request.host_with_port}/#{@image.gyazo_hash}.png"
+    "http://#{settings.my_host rescue request.host_with_port}/#{@image.gyazo_hash}.png"
   end
 
   get '/:hash.png' do
