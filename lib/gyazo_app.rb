@@ -21,13 +21,14 @@ class GyazoApp < Sinatra::Base
   end
 
   before do
-    if !request.get? && settings.gyazo_id
-      halt(500) unless params[:id] == settings.gyazo_id
+    gyazo_id = settings.respond_to?(:gyazo_id) ? settings.gyazo_id : ENV['gyazo_id']
+    if !request.get? && gyazo_id
+      halt(500) unless params[:id] == gyazo_id
     end
   end
 
   get '/' do
-    redirect settings.repository_url
+    redirect settings.respond_to?(:repository_url) ? settings.repository_url : ENV['repository_url']
   end
   
   get '/favicon.ico' do
