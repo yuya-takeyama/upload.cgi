@@ -1,10 +1,13 @@
+require 'sinatra/config_file'
 require 'gyazo/initialize'
 require 'gyazo/image'
 
 class GyazoApp < Sinatra::Base
-  set :gyazo_id, false
-  #set :my_host, "gyazo.udzura.jp"
-  set :repository_url, 'https://github.com/udzura/upload.cgi'
+  register Sinatra::ConfigFile
+
+  set :root, File.expand_path('../', File.dirname(__FILE__))
+
+  config_file 'config/config.yml'
   
   before do
     if !request.get? && options.gyazo_id
