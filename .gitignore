@@ -1,3 +1,4 @@
 .bundle
 config/config.yml
+tmp
 vendor
