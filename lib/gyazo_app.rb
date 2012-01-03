@@ -1,5 +1,4 @@
 require 'sinatra/config_file'
-require 'gyazo/initialize'
 require 'gyazo/image'
 
 class GyazoApp < Sinatra::Base
@@ -8,7 +7,19 @@ class GyazoApp < Sinatra::Base
   set :root, File.expand_path('../', File.dirname(__FILE__))
 
   config_file 'config/config.yml'
-  
+
+  configure do
+    if mongo_uri = ENV['MONGOHQ_URL']
+        Mongoid.database = Mongo::Connection.from_uri(mongo_uri).
+                               db(URI.parse(mongo_uri).path.gsub(/^\//, ''))
+      else # can spin up on local
+        host = settings.respond_to?(:mongo_host) ? settings.mongo_host : 'localhost'
+        port = settings.respond_to?(:mongo_port) ? settings.mongo_port :  Mongo::Connection::DEFAULT_PORT
+        database_name = settings.mongo_database
+      Mongoid.database = Mongo::Connection.new(host, port).db(database_name)
+    end
+  end
+
   before do
     if !request.get? && options.gyazo_id
       halt(500) unless params[:id] == options.gyazo_id
