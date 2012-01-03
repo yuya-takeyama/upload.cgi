@@ -1,19 +1,33 @@
-require 'gyazo/initialize'
+require 'sinatra/config_file'
 require 'gyazo/image'
 
 class GyazoApp < Sinatra::Base
-  set :gyazo_id, false
-  #set :my_host, "gyazo.udzura.jp"
-  set :repository_url, 'https://github.com/udzura/upload.cgi'
-  
+  register Sinatra::ConfigFile
+
+  set :root, File.expand_path('../', File.dirname(__FILE__))
+
+  config_file 'config/config.yml'
+
+  configure do
+    if mongo_uri = ENV['MONGOHQ_URL']
+        Mongoid.database = Mongo::Connection.from_uri(mongo_uri).
+                               db(URI.parse(mongo_uri).path.gsub(/^\//, ''))
+      else # can spin up on local
+        host = settings.respond_to?(:mongo_host) ? settings.mongo_host : 'localhost'
+        port = settings.respond_to?(:mongo_port) ? settings.mongo_port :  Mongo::Connection::DEFAULT_PORT
+        database_name = settings.mongo_database
+      Mongoid.database = Mongo::Connection.new(host, port).db(database_name)
+    end
+  end
+
   before do
-    if !request.get? && options.gyazo_id
-      halt(500) unless params[:id] == options.gyazo_id
+    if !request.get? && settings.gyazo_id
+      halt(500) unless params[:id] == settings.gyazo_id
     end
   end
 
   get '/' do
-    redirect options.repository_url
+    redirect settings.repository_url
   end
   
   get '/favicon.ico' do
@@ -30,7 +44,7 @@ class GyazoApp < Sinatra::Base
             end)
     hash = Digest::MD5.hexdigest(data).to_s
     @image = Gyazo::Image.create!(:gyazo_hash => hash, :body => BSON::Binary.new(data))
-    "http://#{options.my_host rescue request.host_with_port}/#{@image.gyazo_hash}.png"
+    "http://#{settings.my_host rescue request.host_with_port}/#{@image.gyazo_hash}.png"
   end
 
   get '/:hash.png' do

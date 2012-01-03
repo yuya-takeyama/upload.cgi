@@ -6,8 +6,16 @@ Bundler.require()
 Bundler.require(:test)
 $LOAD_PATH << File.expand_path('../../lib', __FILE__)
 
+require 'gyazo_app'
+
+GyazoApp.set :gyazo_id, false
+
 RSpec.configure do |c|
   c.include Rack::Test::Methods
+
+  def app
+    GyazoApp
+  end
 
   c.before :all do
     Gyazo::Image.delete_all
@@ -16,10 +24,4 @@ RSpec.configure do |c|
   c.after :all do
     Gyazo::Image.delete_all
   end
-end
-
-require 'gyazo_app'
-
-def app
-  GyazoApp.new
 end

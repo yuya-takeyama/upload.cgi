@@ -1,0 +1,9 @@
+my_host:        "gyazo.dev"
+repository_url: "https://github.com/yuya-takeyama/upload.cgi"
+gyazo_id:       "YOUR_GYAZO_ID"
+
+#mongo_host:     "YOUR_MONGO_HOST (default is 'localhost')"
+#mongo_port:     "YOUR_MONGO_PORT (default is Mongo::Connection::DEFAULT_PORT)"
+mongo_database:
+  test:        "gyazo_test"
+  development: "gyazo_dev"

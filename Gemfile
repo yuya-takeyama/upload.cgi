@@ -1,6 +1,7 @@
 source :rubygems
 gem 'rack'
 gem 'sinatra'
+gem 'sinatra-contrib', '~> 1.3.1'
 gem 'bson_ext'
 gem 'mongoid', '~>2.0.0'
 
