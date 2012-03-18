@@ -12,7 +12,7 @@ describe GyazoApp do
 
   it 'says hello' do
     get '/'
-    last_response.should be_redirect
+    last_response.should be_ok
   end
   
   it 'has favicon' do
