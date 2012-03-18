@@ -20,6 +20,7 @@ class GyazoApp < Sinatra::Base
       database_name = settings.mongo_database
       Mongoid.database = Mongo::Connection.new(host, port).db(database_name)
     end
+    Mongoid.autocreate_indexes = true
   end
 
   before do
@@ -30,7 +31,7 @@ class GyazoApp < Sinatra::Base
   end
 
   get '/' do
-    @images = Gyazo::Image.all
+    @images = Gyazo::Image.order_by([:created_at, :desc]).all
     haml :index
   end
   
