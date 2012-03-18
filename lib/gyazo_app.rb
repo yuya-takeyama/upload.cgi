@@ -12,18 +12,18 @@ class GyazoApp < Sinatra::Base
 
   configure do
     if mongo_uri = ENV['MONGOHQ_URL']
-        Mongoid.database = Mongo::Connection.from_uri(mongo_uri).
-                               db(URI.parse(mongo_uri).path.gsub(/^\//, ''))
-      else # can spin up on local
-        host = settings.respond_to?(:mongo_host) ? settings.mongo_host : 'localhost'
-        port = settings.respond_to?(:mongo_port) ? settings.mongo_port :  Mongo::Connection::DEFAULT_PORT
-        database_name = settings.mongo_database
+      Mongoid.database = Mongo::Connection.from_uri(mongo_uri).
+        db(URI.parse(mongo_uri).path.gsub(/^\//, ''))
+    else # can spin up on local
+      host = settings.mongo_host rescue 'localhost'
+      port = settings.mongo_port rescue Mongo::Connection::DEFAULT_PORT
+      database_name = settings.mongo_database
       Mongoid.database = Mongo::Connection.new(host, port).db(database_name)
     end
   end
 
   before do
-    gyazo_id = settings.respond_to?(:gyazo_id) ? settings.gyazo_id : ENV['gyazo_id']
+    gyazo_id = settings.gyazo_id rescue ENV['gyazo_id']
     if !request.get? && gyazo_id
       halt(500) unless params[:id] == gyazo_id
     end
