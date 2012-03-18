@@ -1,8 +1,10 @@
 require 'sinatra/config_file'
 require 'gyazo/image'
+require 'haml'
 
 class GyazoApp < Sinatra::Base
   register Sinatra::ConfigFile
+  enable :inline_templates
 
   set :root, File.expand_path('../', File.dirname(__FILE__))
 
@@ -28,7 +30,8 @@ class GyazoApp < Sinatra::Base
   end
 
   get '/' do
-    redirect settings.respond_to?(:repository_url) ? settings.repository_url : ENV['repository_url']
+    @images = Gyazo::Image.all
+    haml :index
   end
   
   get '/favicon.ico' do
@@ -61,3 +64,24 @@ class GyazoApp < Sinatra::Base
     @image.destroy ? "Destroy Success!" : halt(503)
   end
 end
+
+__END__
+
+@@ layout
+!!! 5
+%html
+  %head
+    %title yuyat's Gyazo
+    %meta{'http-equiv' => 'Content-Type', :content => 'text/html'}
+  %body
+    = yield
+
+@@ index
+%h1 yuyat's Gyazo
+%p #{@images.size} pictures posted.
+%ul
+  - @images.each do |image|
+    %li
+      .posted_at #{image.created_at}
+      .image
+        %img{:src => "/#{image.gyazo_hash}.png"}
