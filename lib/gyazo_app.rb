@@ -85,4 +85,5 @@ __END__
     %li
       .posted_at #{image.created_at}
       .image
-        %img{:src => "/#{image.gyazo_hash}.png"}
+        %a(href="#{image.gyazo_hash}.png")
+          %img{:src => "/#{image.gyazo_hash}.png"}
