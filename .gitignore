@@ -1,5 +1,6 @@
 *.swp
 .bundle
+.ruby-version
 config/config.yml
 tmp
 vendor
