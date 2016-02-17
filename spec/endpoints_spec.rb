@@ -12,34 +12,34 @@ describe GyazoApp do
 
   it 'says hello' do
     get '/'
-    last_response.should be_ok
+    expect(last_response).to be_ok
   end
   
   it 'has favicon' do
     get '/favicon.ico'
-    last_response.should be_ok
-    last_response.content_type.should == 'image/x-icon'
+    expect(last_response).to be_ok
+    expect(last_response.content_type).to eq('image/x-icon')
   end
 
   it 'should be uploaded something' do
-    Gyazo::Image.should_receive(:create!).and_return(@image)
+    expect(Gyazo::Image).to receive(:create!).and_return(@image)
     post '/upload.cgi', :imagedata => Rack::Test::UploadedFile.new(@file.path)
-    last_response.should be_ok
+    expect(last_response).to be_ok
   end
 
   it 'should show image' do
     get '/test-hash.png'
-    last_response.should be_ok
+    expect(last_response).to be_ok
   end
 
   it 'should show 404 if no image' do
     get '/test-nonexist-hash.png'
-    last_response.should be_not_found
+    expect(last_response).to be_not_found
   end
 
   it 'should be able to delete image' do
     delete '/test-hash.png'
-    last_response.should be_ok
-    Gyazo::Image.where(:gyazo_hash => "test-hash").first.should be_nil
+    expect(last_response).to be_ok
+    expect(Gyazo::Image.where(:gyazo_hash => "test-hash").first).to be_nil
   end
 end
